@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Reusable FEDPOFFA frontend components.">
+    <meta name="theme-color" content="#0B3D91">
+    <title>Component Reference | FEDPOFFA</title>
+    <link rel="stylesheet" href="./assets/css/styles.css">
+    <script src="./assets/js/ui.js" defer></script>
+  </head>
+  <body class="font-sans antialiased">
+    <main class="portal-shell min-h-screen px-4 py-8 dark:text-slate-100">
+      <section class="mx-auto grid max-w-5xl gap-6">
+        <div class="card rounded-lg p-5">
+          <div class="flex items-center justify-between gap-4">
+            <div>
+              <div class="page-kicker"><span data-icon="table"></span> UI kit</div>
+              <h1 class="mt-4 text-3xl font-black text-slate-950 dark:text-white">Reusable Components</h1>
+              <p class="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300">Copy these patterns into any normal HTML page. Icons use <code>data-icon</code> and are rendered by <code>assets/js/ui.js</code>.</p>
+            </div>
+            <button data-theme-toggle class="icon-btn" type="button" aria-label="Toggle dark mode"></button>
+          </div>
+        </div>
+
+        <section class="card rounded-lg p-5">
+          <h2 class="text-xl font-black text-slate-950 dark:text-white">Buttons And Icons</h2>
+          <div class="mt-4 flex flex-wrap gap-3">
+            <button class="btn-primary" type="button"><span data-icon="save"></span> Primary</button>
+            <button class="btn-secondary" type="button"><span data-icon="edit"></span> Secondary</button>
+            <button class="btn-danger" type="button"><span data-icon="trash"></span> Danger</button>
+            <button class="icon-btn" type="button" title="Close"><span data-icon="x"></span></button>
+            <button class="icon-btn" type="button" title="Print"><span data-icon="printer"></span></button>
+          </div>
+        </section>
+
+        <section class="card rounded-lg p-5">
+          <h2 class="text-xl font-black text-slate-950 dark:text-white">Form Pattern</h2>
+          <form class="form-grid mt-4">
+            <label class="form-label">Text Field<input class="input" placeholder="Type here"><span class="form-help">Use <code>.form-label</code>, <code>.input</code>, and <code>.form-help</code>.</span></label>
+            <label class="form-label">Select Field<select class="input"><option>Enabled</option><option>Disabled</option></select></label>
+          </form>
+        </section>
+
+        <section class="card rounded-lg p-5">
+          <h2 class="text-xl font-black text-slate-950 dark:text-white">Table Pattern</h2>
+          <div class="table-wrap mt-4">
+            <table class="data-table">
+              <thead><tr><th>Name</th><th>Status</th><th class="text-right">Actions</th></tr></thead>
+              <tbody>
+                <tr><td class="font-black text-slate-950 dark:text-white">Computer Science</td><td><span class="status-pill bg-green-100 text-green-700 dark:bg-green-500/15 dark:text-green-300">Active</span></td><td class="text-right"><button class="icon-btn" type="button"><span data-icon="edit"></span></button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+    </main>
+  </body>
+</html>

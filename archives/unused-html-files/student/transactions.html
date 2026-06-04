@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+  <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="FEDPOFFA student transaction history."><meta name="theme-color" content="#0B3D91"><title>Student Transactions | FEDPOFFA</title><link rel="stylesheet" href="../assets/css/styles.css"><script src="../assets/js/ui.js" defer></script><script src="../assets/js/student.js" defer></script></head>
+  <body class="font-sans antialiased">
+    <div class="portal-shell dark:text-slate-100">
+      <header class="glass-nav sticky top-0 z-50"><nav class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8"><a href="../index.html" class="flex items-center gap-3"><span class="grid h-11 w-11 place-items-center rounded-lg bg-fedpoffa-blue text-sm font-black text-white">FP</span><span><span class="block text-sm font-black text-slate-950 dark:text-white">FEDPOFFA</span><span class="block text-xs font-semibold text-slate-500 dark:text-slate-400">Student Portal</span></span></a><div class="hidden items-center gap-2 md:flex"><a class="nav-link" href="./dashboard.html">Dashboard</a><a class="nav-link" href="./payment.html">Payment</a><a class="nav-link is-active" href="./transactions.html">History</a><a class="nav-link" href="./login.html">Logout</a></div><button data-theme-toggle class="icon-btn" type="button" aria-label="Toggle dark mode"></button></nav></header>
+      <main class="mx-auto max-w-7xl px-4 pb-28 pt-6 sm:px-6 lg:px-8">
+        <section class="view grid gap-5 py-4">
+          <div class="card rounded-lg p-5"><div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"><div><h1 class="text-2xl font-black text-slate-950 dark:text-white sm:text-3xl">Transaction History</h1><p class="mt-1 text-sm font-semibold text-slate-500 dark:text-slate-400">Deposits, confirmations, and receipt references</p></div><span data-status-pill class="status-pill">ACTIVE</span></div></div>
+          <section class="card rounded-lg p-5">
+            <div class="grid gap-3 md:grid-cols-[1fr_12rem]">
+              <label class="form-label"><span class="flex items-center gap-2"><span data-icon="search"></span> Search</span><input class="input" data-search-transactions placeholder="Search reference, method, status"></label>
+              <label class="form-label">Sort<select class="input" data-sort-transactions><option value="desc">Newest first</option><option value="asc">Oldest first</option></select></label>
+            </div>
+            <div class="table-wrap mt-5"><table class="data-table"><thead><tr><th>Reference</th><th>Date</th><th>Method</th><th>Status</th><th class="text-right">Amount</th><th class="text-right">Receipt</th></tr></thead><tbody data-transaction-table></tbody></table></div>
+          </section>
+        </section>
+      </main>
+      <nav class="fixed inset-x-0 bottom-0 z-50 border-t border-slate-200 bg-white/95 px-2 py-2 shadow-[0_-18px_40px_rgba(15,23,42,0.12)] backdrop-blur dark:border-slate-800 dark:bg-slate-950/95 md:hidden"><div class="mx-auto grid max-w-md grid-cols-4 gap-1"><a class="mobile-nav-link" href="./dashboard.html"><span data-icon="table"></span><span>Dash</span></a><a class="mobile-nav-link" href="./payment.html"><span data-icon="wallet"></span><span>Pay</span></a><a class="mobile-nav-link is-active" href="./transactions.html"><span data-icon="receipt"></span><span>History</span></a><a class="mobile-nav-link" href="./login.html"><span data-icon="login"></span><span>Logout</span></a></div></nav>
+    </div>
+    <div id="modalRoot" class="fixed inset-0 z-[70] hidden items-end justify-center bg-slate-950/60 p-3 backdrop-blur-sm sm:items-center" role="dialog" aria-modal="true"></div><div id="toastStack" class="fixed right-3 top-20 z-[90] grid w-[calc(100vw-1.5rem)] max-w-sm gap-3 sm:right-5"></div>
+  </body>
+</html>

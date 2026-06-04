@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Printable FEDPOFFA student receipt.">
+    <meta name="theme-color" content="#0B3D91">
+    <title>Printable Receipt | FEDPOFFA</title>
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <script src="../assets/js/ui.js" defer></script>
+    <script src="../assets/js/student.js" defer></script>
+  </head>
+  <body class="font-sans antialiased">
+    <main class="min-h-screen bg-slate-100 px-4 py-6 dark:bg-slate-950 sm:py-10">
+      <div class="no-print mx-auto mb-5 flex max-w-3xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <a class="btn-secondary" href="./dashboard.html"><span data-icon="x"></span> Back</a>
+        <button class="btn-primary" type="button" onclick="window.print()"><span data-icon="printer"></span> Print Receipt</button>
+      </div>
+      <section data-receipt-page></section>
+    </main>
+  </body>
+</html>

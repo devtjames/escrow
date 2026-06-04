@@ -1,0 +1,112 @@
+Act as a world-class senior frontend architect, UI/UX designer, and performance engineer.
+
+Build a fully responsive, mobile-first, ultra-fast School Fee Payment System frontend for Federal Polytechnic Offa (FEDPOFFA).
+
+🎯 Tech Stack
+HTML5 (semantic, SEO optimized)
+TailwindCSS (primary styling system)
+Minimal custom CSS (only when necessary)
+Vanilla JavaScript (no frameworks)
+Fully responsive (mobile-first → desktop optimized)
+High-performance animations (requestAnimationFrame / CSS transitions only)
+🎨 Design Direction (IMPORTANT)
+
+Base the design on an academic institutional portal style:
+
+Primary color: deep institutional blue (#0B3D91 or similar)
+Secondary: white, light gray, subtle green accents for success states
+Clean dashboard UI (like a university portal)
+Professional, trust-building aesthetic
+Inspired by FEDPOFFA portal structure (login, dashboard, payment, results)
+⚡ Core Pages / Screens
+Landing Page
+Hero section (institution branding)
+Call-to-action: “Login / Start Payment”
+Stats (students, programs, payments processed)
+News & updates section
+Smooth scroll navigation
+Auth System UI
+Student login
+Admin login
+Forgot password modal
+Student Dashboard (Core)
+Fee overview card:
+Total fee (target)
+Paid amount
+Remaining balance
+Progress bar (animated)
+Status badge:
+Active / Completed / Paid
+Deposit button (primary CTA)
+Deposit / Wallet System UI
+Add funds modal
+Transaction input
+Payment method selection UI (UI only)
+Deposit history list
+Lock system UI when fully paid
+Payment Page UI
+Fee breakdown table
+Checkout summary card
+Receipt preview modal
+Transaction History
+Filterable table
+Search input
+Date sorting UI
+Admin Dashboard UI
+Students table
+Payment tracking table
+Fee configuration panel
+Analytics cards (UI only)
+Notifications System
+Toast notifications (success/error/warning)
+Payment confirmation alerts
+🎬 UI/UX Requirements
+Smooth page loader (modern animated loader)
+Micro-interactions (hover, click, card lift)
+Skeleton loaders for data loading states
+Sticky navigation + sticky CTA button
+Animated progress bars for payment tracking
+Modal system (clean, accessible)
+Dark/light mode toggle (optional but preferred)
+📱 Mobile-First Requirements
+Fully optimized for small screens first
+Bottom navigation for mobile dashboard
+Touch-friendly buttons
+No horizontal scrolling EVER
+Optimized typography scaling
+⚡ Performance Rules
+No heavy libraries
+Lazy-load sections where needed
+Minimal DOM manipulation
+Use CSS transitions instead of JS animations where possible
+Optimize for fast initial load (<2s target)
+🧠 Functional Logic (Frontend simulation only)
+
+Each student has:
+
+target_amount (school fee)
+current_balance
+remaining_balance
+status: active | completed | paid
+
+Rules:
+
+Students can deposit multiple times
+Balance updates dynamically in UI
+When balance == target → status becomes “Paid”
+UI locks deposit button when completed
+🎯 Final Output Requirement
+
+Generate:
+
+Fully working frontend code
+Multi-page structure
+Clean folder structure if needed
+Fully responsive design
+Production-ready UI system
+💡 Extra Credit Features (if possible)
+Smooth page transitions
+Animated dashboard cards
+Fake API simulation (localStorage)
+Printable receipt UI
+Elegant onboarding screen

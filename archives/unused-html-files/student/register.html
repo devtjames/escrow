@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="FEDPOFFA student registration.">
+    <meta name="theme-color" content="#0B3D91">
+    <title>Student Registration | FEDPOFFA</title>
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <script src="../assets/js/ui.js" defer></script>
+    <script src="../assets/js/student.js" defer></script>
+  </head>
+  <body class="font-sans antialiased">
+    <div class="portal-shell dark:text-slate-100">
+      <header class="glass-nav sticky top-0 z-50"><nav class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8"><a href="../index.html" class="flex items-center gap-3"><span class="grid h-11 w-11 place-items-center rounded-lg bg-fedpoffa-blue text-sm font-black text-white">FP</span><span><span class="block text-sm font-black text-slate-950 dark:text-white">FEDPOFFA</span><span class="block text-xs font-semibold text-slate-500 dark:text-slate-400">Student Portal</span></span></a><div class="hidden items-center gap-2 md:flex"><a class="nav-link" href="../index.html">Home</a><a class="nav-link" href="./login.html">Login</a><a class="nav-link is-active" href="./register.html">Register</a></div><button data-theme-toggle class="icon-btn" type="button" aria-label="Toggle dark mode"></button></nav></header>
+      <main class="mx-auto max-w-5xl px-4 pb-24 pt-8 sm:px-6 lg:px-8">
+        <form class="view card rounded-lg p-5 sm:p-7" data-student-register>
+          <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between"><div><div class="page-kicker"><span data-icon="userPlus"></span> Student registration</div><h1 class="mt-4 text-3xl font-black text-slate-950 dark:text-white">Create Student Account</h1><p class="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300">Frontend registration screen ready for a PHP backend.</p></div><a class="btn-secondary" href="./login.html">Login</a></div>
+          <div class="form-grid mt-6">
+            <label class="form-label">Full Name<input class="input" placeholder="Adebayo Mariam" required></label>
+            <label class="form-label">Matric Number<input class="input" placeholder="FPO/HND/24/0412" required></label>
+            <label class="form-label">Email<input class="input" type="email" placeholder="student@fedpoffa.edu.ng" required></label>
+            <label class="form-label">Phone<input class="input" type="tel" placeholder="08000000000" required></label>
+            <label class="form-label">Program<select class="input" required><option>HND Computer Science</option><option>ND Accountancy</option><option>HND Mass Communication</option><option>ND Statistics</option></select></label>
+            <label class="form-label">Level<select class="input" required><option>ND I</option><option>ND II</option><option>HND I</option><option>HND II</option></select></label>
+            <label class="form-label">Password<input class="input" type="password" required></label>
+            <label class="form-label">Confirm Password<input class="input" type="password" required></label>
+          </div>
+          <button class="btn-primary mt-6 w-full sm:w-auto" type="submit"><span data-icon="save"></span> Register Student</button>
+        </form>
+      </main>
+      <nav class="fixed inset-x-0 bottom-0 z-50 border-t border-slate-200 bg-white/95 px-2 py-2 shadow-[0_-18px_40px_rgba(15,23,42,0.12)] backdrop-blur dark:border-slate-800 dark:bg-slate-950/95 md:hidden"><div class="mx-auto grid max-w-md grid-cols-3 gap-1"><a class="mobile-nav-link" href="../index.html">Home</a><a class="mobile-nav-link" href="./login.html">Login</a><a class="mobile-nav-link is-active" href="./register.html">Register</a></div></nav>
+    </div>
+    <div id="toastStack" class="fixed right-3 top-20 z-[90] grid w-[calc(100vw-1.5rem)] max-w-sm gap-3 sm:right-5"></div>
+  </body>
+</html>

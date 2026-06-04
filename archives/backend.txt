@@ -1,0 +1,666 @@
+# FULL COPIABLE PROMPT — SCHOOL FEES + ESCROW PAYMENT SYSTEM (PHP 8.1+)
+
+Build a COMPLETE production-grade School Fees & Institutional Payment Management System using:
+
+* PHP 8.1+ (PURE procedural PHP only)
+* MySQL + PDO
+* Vanilla JavaScript + AJAX
+* Tailwind CSS (CDN)
+* PHPMailer (Composer allowed)
+* vlucas/phpdotenv for `.env`
+
+STRICT RULES:
+
+* NO Laravel
+* NO CodeIgniter
+* NO Symfony
+* NO MVC framework
+* NO React/Vue frontend framework
+* NO API-only architecture
+* Must be lightweight and optimized for shared hosting
+
+---
+
+# SYSTEM OVERVIEW
+
+This software is a multi-purpose institutional payment management system primarily focused on school fee payments.
+
+The system should support:
+
+* School fees
+* Departmental fees
+* Acceptance fees
+* Institutional charges
+* Other expandable fee categories
+
+The architecture must be scalable and modular.
+
+---
+
+# ENVIRONMENT CONFIGURATION (.ENV REQUIRED)
+
+The system MUST use `.env` for ALL sensitive configuration.
+
+Example:
+
+```env
+APP_NAME=
+APP_URL=
+APP_ENV=production
+
+DB_HOST=
+DB_PORT=
+DB_NAME=
+DB_USER=
+DB_PASS=
+
+JWT_SECRET=
+JWT_EXPIRY=
+
+PAYSTACK_PUBLIC_KEY=
+PAYSTACK_SECRET_KEY=
+
+SMTP_HOST=
+SMTP_PORT=
+SMTP_USER=
+SMTP_PASS=
+SMTP_FROM=
+SMTP_NAME=
+```
+
+Requirements:
+
+* Use `vlucas/phpdotenv`
+* Never hardcode credentials
+* Environment-aware configuration
+* Production-safe setup
+
+---
+
+# AUTHENTICATION SYSTEM
+
+## STUDENT LOGIN
+
+Students can login using:
+
+* Email
+  OR
+* Application Number
+  OR
+* Matric Number
+
+PLUS password.
+
+Single identifier field logic required.
+
+Example:
+
+```php
+$email_or_matric_or_application
+```
+
+---
+
+## PASSWORD SYSTEM
+
+Requirements:
+
+* bcrypt password hashing
+* password confirmation
+* minimum password strength validation
+* secure sessions
+* login rate limiting
+
+Use:
+
+```php
+password_hash($password, PASSWORD_BCRYPT)
+```
+
+---
+
+## PASSWORD RESET SYSTEM
+
+Implement full forgot password flow:
+
+1. Student enters email
+2. Generate secure token
+3. Save hashed token in database
+4. Send reset link via email
+5. Token expires after 1 hour
+6. Token invalidates after usage
+
+Secure token generation:
+
+```php
+bin2hex(random_bytes(32))
+```
+
+Required pages:
+
+* forgot_password.php
+* reset_password.php
+
+---
+
+# EMAIL SYSTEM (PHPMailer)
+
+Composer is allowed ONLY for:
+
+* PHPMailer
+* dotenv
+
+The system must send emails for:
+
+* Registration success
+* Payment receipt
+* Password reset
+* Admin notifications
+* Login alerts (optional)
+
+Reusable helper functions:
+
+* sendMail()
+* sendReceiptEmail()
+* sendResetEmail()
+
+SMTP settings manageable from admin panel.
+
+---
+
+# STUDENT REGISTRATION SYSTEM
+
+Student registration fields:
+
+* Full name
+* Email
+* Password
+* Phone number
+* Address
+* Gender
+* Faculty
+* Department
+* Programme Type
+* Study Mode
+* Application Number
+* Matric Number (optional)
+
+---
+
+# APPLICATION & MATRIC NUMBER RULES
+
+## Application Number
+
+* REQUIRED
+* UNIQUE
+* Editable only by admin if necessary
+
+## Matric Number
+
+* OPTIONAL initially
+* Student may update later
+* Once added and saved:
+
+  * becomes LOCKED permanently
+  * cannot be edited again
+
+---
+
+# PROGRAMME STRUCTURE
+
+Supported programme types:
+
+* ND
+* HND
+
+Supported study modes:
+
+* FT (Full-Time)
+* PT (Part-Time)
+
+IMPORTANT RULES:
+
+* ND supports:
+
+  * ND FT
+  * ND PT
+* HND supports:
+
+  * HND FT ONLY
+* HND PT DOES NOT EXIST
+
+Validation required.
+
+---
+
+# SESSION & SEMESTER SYSTEM
+
+## SESSION
+
+School fees are SESSION-based.
+
+Examples:
+
+* 2025/2026
+* 2026/2027
+
+Rules:
+
+* Only ONE active session at a time
+* Activating new session automatically deactivates previous session
+
+---
+
+## SEMESTER
+
+Semester CRUD should still exist for future expansion but school fee calculations are NOT semester-based.
+
+---
+
+# DYNAMIC STUDENT CATEGORY LOGIC (IMPORTANT)
+
+The system should NOT rely mainly on manual promotion tables.
+
+Student status should be computed dynamically using:
+
+* admission_session
+* current_active_session
+* programme_type
+* study_mode
+* payment/session history
+
+---
+
+# STUDENT CATEGORY RULES
+
+## Fresher
+
+A student is a Fresher during their FIRST academic session.
+
+Examples:
+
+* ND1 FT
+* ND1 PT
+* HND1 FT
+
+## Staylite
+
+A student becomes Staylite from their SECOND session onward.
+
+Examples:
+
+* ND2 FT
+* ND2 PT
+* HND2 FT
+
+---
+
+# AUTOMATIC PROGRESSION LOGIC
+
+Example:
+
+If:
+
+* admission_session = 2025/2026
+* current_active_session = 2025/2026
+
+Then:
+
+* student category = Fresher
+
+If active session changes to:
+
+* 2026/2027
+
+Then:
+
+* student automatically becomes Staylite
+
+This progression should happen dynamically without requiring manual promotion for normal transitions.
+
+Optional:
+
+* Keep lightweight promotion history table for audit logs only.
+
+---
+
+# FACULTY & DEPARTMENT SYSTEM
+
+Requirements:
+
+* Faculties stored in DB
+* Departments stored in DB
+* Department belongs to faculty
+
+Admin panel must include:
+
+* Faculty CRUD
+* Department CRUD
+
+AJAX REQUIRED:
+
+* Selecting faculty dynamically loads departments
+
+Use dependent dropdowns.
+
+---
+
+# SCHOOL FEE STRUCTURE
+
+School fee calculation depends on:
+
+* Faculty
+* Programme Type
+* Study Mode
+* Student Category
+* Session
+
+Examples:
+
+* ND FT Fresher
+* ND FT Staylite
+* ND PT Fresher
+* ND PT Staylite
+* HND FT Fresher
+* HND FT Staylite
+
+Each can have different fee amounts.
+
+---
+
+# OTHER FEES
+
+Other fees may be:
+
+* Department-based
+* Faculty-based
+* Session-based
+* General institutional fees
+
+Admin must configure:
+
+* fee title
+* fee type
+* amount
+* department/faculty scope
+* session
+* active status
+
+---
+
+# ESCROW WALLET SYSTEM
+
+Each student has:
+
+* target_amount
+* current_balance
+* remaining_balance
+* status
+
+Wallet statuses:
+
+* active
+* completed
+* paid
+
+---
+
+# ESCROW PAYMENT LOGIC
+
+Students can deposit multiple times until:
+
+```php
+$current_balance >= $target_amount
+```
+
+When target is reached:
+
+* wallet locks
+* deposit button disables
+* further deposits blocked
+* status changes to completed
+
+---
+
+# STRICT DEPOSIT LOGIC
+
+```php
+if ($wallet['status'] !== 'active') {
+    return "Deposit locked";
+}
+
+$remaining = $wallet['target_amount'] - $wallet['current_balance'];
+
+$amount = min($amount, $remaining);
+
+$newBalance = $wallet['current_balance'] + $amount;
+
+if ($newBalance >= $wallet['target_amount']) {
+    $status = 'completed';
+}
+```
+
+---
+
+# PAYSTACK PAYMENT SYSTEM
+
+Requirements:
+
+* Proper Paystack integration
+* Webhook verification
+* Transaction verification
+* Prevent duplicate transactions
+* Store webhook payload JSON
+* Payment logging
+
+IMPORTANT:
+Paystack uses KOBO.
+
+Before sending:
+
+```php
+$amount * 100
+```
+
+After verification:
+normalize correctly.
+
+---
+
+# PAYSTACK FLOW
+
+1. Initialize transaction
+2. Redirect to Paystack
+3. Verify transaction/webhook
+4. Update wallet
+5. Save transaction
+6. Send receipt email
+7. Log activity
+
+---
+
+# PAYSTACK BUG FIX REQUIREMENT
+
+Fix live-server amount mismatch issues.
+
+Ensure:
+
+* localhost
+* staging
+* production
+
+all calculate identical amounts.
+
+Prevent:
+
+* float precision errors
+* duplicate webhook processing
+* inconsistent rounding
+
+---
+
+# PAYMENT RECEIPT SYSTEM
+
+Printable receipt must include:
+
+* student name
+* application number
+* matric number
+* fee type
+* session
+* amount
+* payment reference
+* date
+* institution branding
+
+Optional:
+
+* QR verification later
+
+---
+
+# ADMIN SYSTEM
+
+Roles:
+
+* super_admin
+* admin
+
+First system setup:
+
+* super admin seeded automatically
+
+Admin features:
+
+* manage students
+* manage fees
+* manage payments
+* manage sessions
+* manage faculties
+* manage departments
+* manage wallets
+* manage SMTP settings
+* manage reports
+
+---
+
+# ACCESS CONTROL
+
+Implement REAL access control.
+
+Requirements:
+
+* student pages require student auth
+* admin pages require admin auth
+* reject unauthorized access server-side
+* JWT or secure session auth
+* HttpOnly cookies
+* SameSite cookies
+
+---
+
+# SECURITY REQUIREMENTS
+
+Implement:
+
+* PDO prepared statements only
+* CSRF protection
+* XSS sanitization
+* secure session handling
+* rate limiting
+* webhook signature verification
+* password hashing
+* role-based authorization
+* activity logs
+* payment logs
+
+---
+
+# DATABASE TABLES
+
+Must include:
+
+* admins
+* students
+* faculties
+* departments
+* sessions
+* semesters
+* fees
+* wallets
+* transactions
+* payments
+* password_resets
+* email_logs
+* settings
+* activity_logs
+
+Optional:
+
+* student_promotions (I don't think of this since that will be taken care of logically)
+
+---
+
+# FRONTEND INTEGRATION RULE
+
+DO NOT redesign frontend.
+
+Review the whole parent folder and make use of the provided frontend templates/components.
+
+You MUST:
+
+* analyze provided frontend files
+* reuse frontend components
+* integrate backend logic cleanly
+* preserve frontend UI structure
+
+---
+
+# DEPLOYMENT REQUIREMENTS
+
+Must work on:
+
+* cPanel shared hosting
+* Apache
+* PHP 8.1+
+* MySQL
+* .htaccess
+
+No heavy server requirements.
+
+---
+
+# FINAL OUTPUT REQUIREMENTS
+
+Generate FULLY:
+
+* project structure
+* SQL schema
+* authentication system
+* Paystack integration
+* PHPMailer integration
+* AJAX handlers
+* admin dashboard
+* student dashboard
+* wallet system
+* fee management
+* session management
+* dynamic progression logic
+* payment system
+* receipt system
+* middleware/auth guards
+* reusable helper functions
+
+DO NOT TRUNCATE CODE.
+
+Output ALL files completely with clear file headers.
+
+The final system must be:
+
+* secure
+* scalable
+* modular
+* production-ready
+* optimized for Nigerian institutions
+* deployable immediately
+* compatible with shared hosting.

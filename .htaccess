@@ -1,0 +1,35 @@
+Options -Indexes -MultiViews
+DirectoryIndex index.php index.html
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # Canonical clean URLs: /student/login instead of /student/login.php.
+  # These relative substitutions work whether the app is installed at the
+  # domain root or inside a subdirectory such as /escrow.
+  RewriteCond %{THE_REQUEST} \s/+(.+?)\.php[\s?] [NC]
+  RewriteRule ^(.+)\.php$ $1 [R=301,L]
+
+  RewriteCond %{THE_REQUEST} \s/+(.+?)\.html[\s?] [NC]
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^(.+)\.html$ $1 [R=301,L]
+
+  # Keep real files and folders (CSS, JS, images, vendor assets) untouched.
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+
+  RewriteCond %{REQUEST_FILENAME}.php -f
+  RewriteRule ^(.+?)/?$ $1.php [L]
+
+  RewriteCond %{REQUEST_FILENAME}.html -f
+  RewriteRule ^(.+?)/?$ $1.html [L]
+
+  # Branded portal error page for unknown clean URLs.
+  RewriteCond %{REQUEST_URI} !\.[A-Za-z0-9]{1,8}$
+  RewriteRule ^ error.php [L]
+</IfModule>
+
+<FilesMatch "^(\.env|backend\.txt|composer\.(json|lock)|package(-lock)?\.json|tailwind\.config\.js|schema\.sql|router\.php|\.installed)$">
+  Require all denied
+</FilesMatch>
