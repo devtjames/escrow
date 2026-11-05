@@ -26,6 +26,14 @@ function ensure_receipt_email_columns(): void
         if (!$column) {
             db()->exec('ALTER TABLE transactions ADD receipt_email_error TEXT NULL AFTER receipt_email_sent_at');
         }
+        $column = db_one("SHOW COLUMNS FROM transactions LIKE 'next_of_kin_receipt_email_sent_at'");
+        if (!$column) {
+            db()->exec('ALTER TABLE transactions ADD next_of_kin_receipt_email_sent_at DATETIME NULL AFTER receipt_email_error');
+        }
+        $column = db_one("SHOW COLUMNS FROM transactions LIKE 'next_of_kin_receipt_email_error'");
+        if (!$column) {
+            db()->exec('ALTER TABLE transactions ADD next_of_kin_receipt_email_error TEXT NULL AFTER next_of_kin_receipt_email_sent_at');
+        }
     } catch (Throwable) {
     }
 }
@@ -146,11 +154,15 @@ function sendMail(string $to, string $subject, string $html, string $text = ''):
     return $ok;
 }
 
-function sendReceiptEmail(array $student, array $transaction): bool
+function sendReceiptEmail(array $student, array $transaction, string $recipient, bool $toNextOfKin = false): bool
 {
     $receiptUrl = app_url('/student/receipt?ref=' . urlencode((string) $transaction['reference']));
-    $content = '<p style="margin:0 0 14px 0">Dear ' . e($student['full_name']) . ',</p>'
-        . '<p style="margin:0 0 18px 0">Your payment/deposit has been received and verified successfully.</p>'
+    $recipientName = $toNextOfKin ? (string) $student['next_of_kin_full_name'] : (string) $student['full_name'];
+    $intro = $toNextOfKin
+        ? 'This is a payment receipt notification for ' . e($student['full_name']) . ', for whom you are listed as next of kin.'
+        : 'Your payment/deposit has been received and verified successfully.';
+    $content = '<p style="margin:0 0 14px 0">Dear ' . e($recipientName) . ',</p>'
+        . '<p style="margin:0 0 18px 0">' . $intro . '</p>'
         . '<table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="margin:20px 0;border-collapse:collapse"><tr>'
         . '<td class="email-stat" style="padding:18px;border-radius:10px;background:#EAF7F0;border:1px solid #BFE6CE"><div style="font-size:12px;font-weight:800;text-transform:uppercase;color:#0B5D3B">Amount Paid</div><div style="margin-top:6px;font-size:26px;line-height:32px;font-weight:900;color:#1F1F1F">' . e(money_naira((int) $transaction['amount'])) . '</div></td>'
         . '</tr></table>'
@@ -160,10 +172,10 @@ function sendReceiptEmail(array $student, array $transaction): bool
             'Status' => strtoupper((string) $transaction['status']),
             'Date' => date('d M Y h:i A', strtotime((string) $transaction['created_at'])),
         ])
-        . email_button($receiptUrl, 'View / Print Receipt')
+        . ($toNextOfKin ? '' : email_button($receiptUrl, 'View / Print Receipt'))
         . '<p style="margin:18px 0 0 0;color:#6B7280;font-size:13px;line-height:20px">Keep this reference for your records. Your dashboard has also been updated.</p>';
     $html = email_shell('Payment Receipt', 'Your payment of ' . money_naira((int) $transaction['amount']) . ' was verified.', $content);
-    return sendMail($student['email'], 'Payment Receipt - ' . $transaction['reference'], $html);
+    return sendMail($recipient, 'Payment Receipt - ' . $transaction['reference'], $html);
 }
 
 function sendTransactionReceiptEmailOnce(int $transactionId): bool
@@ -173,24 +185,48 @@ function sendTransactionReceiptEmailOnce(int $transactionId): bool
     if (!$transaction) {
         return false;
     }
-    if (!empty($transaction['receipt_email_sent_at'])) {
-        return true;
-    }
-
     $student = db_one('SELECT * FROM students WHERE id = ?', [(int) $transaction['student_id']]);
     if (!$student) {
         return false;
     }
 
-    $ok = sendReceiptEmail($student, $transaction);
-    $latestLog = db_one(
-        'SELECT error_message FROM email_logs WHERE recipient = ? AND subject = ? ORDER BY id DESC LIMIT 1',
-        [$student['email'], 'Payment Receipt - ' . $transaction['reference']]
-    );
+    $subject = 'Payment Receipt - ' . $transaction['reference'];
+    $studentSent = !empty($transaction['receipt_email_sent_at']);
+    $nextOfKinEmail = trim((string) ($student['next_of_kin_email'] ?? ''));
+    $nextOfKinRequired = $nextOfKinEmail !== '';
+    $nextOfKinSent = !$nextOfKinRequired || !empty($transaction['next_of_kin_receipt_email_sent_at']);
+    $studentError = null;
+    $nextOfKinError = null;
+
+    if (!$studentSent) {
+        $studentSent = sendReceiptEmail($student, $transaction, (string) $student['email']);
+        if (!$studentSent) {
+            $latestLog = db_one('SELECT error_message FROM email_logs WHERE recipient = ? AND subject = ? ORDER BY id DESC LIMIT 1', [(string) $student['email'], $subject]);
+            $studentError = $latestLog['error_message'] ?? 'Student receipt email delivery failed.';
+        }
+    }
+    if (!$nextOfKinSent) {
+        $nextOfKinSent = sendReceiptEmail($student, $transaction, $nextOfKinEmail, true);
+        if (!$nextOfKinSent) {
+            $latestLog = db_one('SELECT error_message FROM email_logs WHERE recipient = ? AND subject = ? ORDER BY id DESC LIMIT 1', [$nextOfKinEmail, $subject]);
+            $nextOfKinError = $latestLog['error_message'] ?? 'Next of kin receipt email delivery failed.';
+        }
+    }
+
+    $ok = $studentSent && $nextOfKinSent;
     try {
         db_exec(
-            'UPDATE transactions SET receipt_email_sent_at = ?, receipt_email_error = ? WHERE id = ?',
-            [$ok ? date('Y-m-d H:i:s') : null, $ok ? null : ($latestLog['error_message'] ?? 'Email delivery failed.'), $transactionId]
+            'UPDATE transactions
+             SET receipt_email_sent_at = ?, receipt_email_error = ?,
+                 next_of_kin_receipt_email_sent_at = ?, next_of_kin_receipt_email_error = ?
+             WHERE id = ?',
+            [
+                $studentSent ? ($transaction['receipt_email_sent_at'] ?: date('Y-m-d H:i:s')) : null,
+                $studentSent ? null : $studentError,
+                $nextOfKinRequired && $nextOfKinSent ? ($transaction['next_of_kin_receipt_email_sent_at'] ?: date('Y-m-d H:i:s')) : null,
+                $nextOfKinRequired && !$nextOfKinSent ? $nextOfKinError : null,
+                $transactionId,
+            ]
         );
     } catch (Throwable) {
     }

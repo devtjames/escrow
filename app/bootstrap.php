@@ -127,6 +127,7 @@ register_shutdown_function(static function (): void {
 });
 
 ensure_academic_schema_updates();
+ensure_receipt_email_columns();
 seed_super_admin();
 close_expired_sessions();
 close_inactive_open_sessions();

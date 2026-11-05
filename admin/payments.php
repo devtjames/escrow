@@ -61,7 +61,7 @@ if ($filters['date_to'] !== '') {
     $where[] = 'DATE(t.created_at) <= ?';
     $params[] = $filters['date_to'];
 }
-$sql = 'SELECT t.*, s.full_name, s.matric_number, s.application_number, ss.name session_name
+$sql = 'SELECT t.*, s.full_name, s.matric_number, s.application_number, s.next_of_kin_email, ss.name session_name
         FROM transactions t
         JOIN students s ON s.id = t.student_id
         JOIN sessions ss ON ss.id = t.session_id';
@@ -126,7 +126,18 @@ page_head('Payment Records | FEDPOFFA Admin', 'Manage FEDPOFFA payment records.'
                       <td data-label="Method"><?= e($row['gateway']) ?></td>
                       <td data-label="Amount" class="font-black"><?= e(money_naira((int) $row['amount'])) ?></td>
                       <td data-label="Status"><span class="status-pill <?= $row['status'] === 'successful' ? 'bg-green-100 text-green-700 dark:bg-green-500/15 dark:text-green-300' : ($row['status'] === 'failed' ? 'bg-red-50 text-red-800 dark:bg-red-500/15 dark:text-red-200' : 'bg-amber-50 text-amber-800 dark:bg-amber-500/15 dark:text-amber-200') ?>"><?= e(strtoupper($row['status'])) ?></span></td>
-                      <td data-label="Email"><?= $row['receipt_email_sent_at'] ? '<span class="status-pill bg-green-100 text-green-700 dark:bg-green-500/15 dark:text-green-300">SENT</span>' : '<span class="status-pill bg-amber-50 text-amber-800 dark:bg-amber-500/15 dark:text-amber-200">PENDING</span>' ?></td>
+                      <td data-label="Email"><?php
+                        $studentReceiptSent = !empty($row['receipt_email_sent_at']);
+                        $nextOfKinRequired = !empty($row['next_of_kin_email']);
+                        $nextOfKinReceiptSent = !$nextOfKinRequired || !empty($row['next_of_kin_receipt_email_sent_at']);
+                        if ($studentReceiptSent && $nextOfKinReceiptSent) {
+                            echo '<span class="status-pill bg-green-100 text-green-700 dark:bg-green-500/15 dark:text-green-300">' . ($nextOfKinRequired ? 'BOTH SENT' : 'SENT') . '</span>';
+                        } elseif ($studentReceiptSent || $nextOfKinReceiptSent) {
+                            echo '<span class="status-pill bg-amber-50 text-amber-800 dark:bg-amber-500/15 dark:text-amber-200">PARTIAL</span>';
+                        } else {
+                            echo '<span class="status-pill bg-amber-50 text-amber-800 dark:bg-amber-500/15 dark:text-amber-200">PENDING</span>';
+                        }
+                      ?></td>
                       <td data-label="Actions" class="text-right">
                         <div class="inline-flex gap-2">
                           <a class="icon-btn" href="../student/receipt?ref=<?= urlencode((string) $row['reference']) ?>" target="_blank" title="View receipt"><span data-icon="receipt"></span></a>

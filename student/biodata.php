@@ -38,7 +38,7 @@ page_head('Student Biodata | FEDPOFFA', 'Student biodata settings.', ['assets/js
         <div>
           <div class="page-kicker"><span data-icon="userPlus"></span> Student biodata</div>
           <h1 class="mt-4 text-3xl font-black text-slate-950 dark:text-white">Biodata Details</h1>
-          <p class="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300">Update your contact details and add your matric number once it has been issued.</p>
+          <p class="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300">Update your contact details and add your matric number once it has been issued. Next of kin details are managed by an administrator.</p>
         </div>
         <span class="status-pill <?= (int) $student['matric_locked'] === 1 ? 'bg-green-100 text-green-700 dark:bg-green-500/15 dark:text-green-300' : 'bg-amber-50 text-amber-800 dark:bg-amber-500/15 dark:text-amber-200' ?>"><?= (int) $student['matric_locked'] === 1 ? 'MATRIC LOCKED' : 'MATRIC PENDING' ?></span>
       </div>
@@ -50,6 +50,10 @@ page_head('Student Biodata | FEDPOFFA', 'Student biodata settings.', ['assets/js
         <label class="form-label">Matric Number<input class="input" name="matric_number" value="<?= e($student['matric_number']) ?>" placeholder="Enter matric number when issued" <?= (int) $student['matric_locked'] === 1 ? 'disabled' : '' ?>><span class="form-help">Once saved, this field locks permanently and can only be changed by an administrator.</span></label>
         <label class="form-label">Phone<input class="input" name="phone" value="<?= e($student['phone']) ?>"></label>
         <label class="form-label">Address<input class="input" name="address" value="<?= e($student['address']) ?>"></label>
+        <label class="form-label">Next of Kin / Guardian<input class="input" value="<?= e($student['next_of_kin_full_name'] ?? '') ?>" disabled><span class="form-help">Admin-only</span></label>
+        <label class="form-label">Relationship<input class="input" value="<?= e($student['next_of_kin_relationship'] ?? '') ?>" disabled><span class="form-help">Admin-only</span></label>
+        <label class="form-label">Next of Kin Email<input class="input" value="<?= e($student['next_of_kin_email'] ?? '') ?>" disabled><span class="form-help">Admin-only</span></label>
+        <label class="form-label">Next of Kin Phone<input class="input" value="<?= e($student['next_of_kin_phone'] ?? '') ?>" disabled><span class="form-help">Admin-only</span></label>
         <label class="form-label">Gender<input class="input" value="<?= e($student['gender']) ?>" disabled></label>
         <label class="form-label">Programme<input class="input" value="<?= e($student['programme_type'] . ' ' . $student['study_mode'] . ' - ' . student_level($student)) ?>" disabled></label>
         <label class="form-label">Faculty<input class="input" value="<?= e($student['faculty_name']) ?>" disabled></label>

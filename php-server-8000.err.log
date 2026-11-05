@@ -3507,3 +3507,23 @@ Stack trace:
 [Wed Jun  3 09:33:42 2026] 127.0.0.1:8872 Accepted
 [Wed Jun  3 09:34:44 2026] 127.0.0.1:8872 Closed without sending a request; it was probably just an unused speculative preconnection
 [Wed Jun  3 09:34:44 2026] 127.0.0.1:8872 Closing
+[Sat Jun  6 16:49:43 2026] 127.0.0.1:8929 Accepted
+[Sat Jun  6 16:51:09 2026] 127.0.0.1:8929 Closed without sending a request; it was probably just an unused speculative preconnection
+[Sat Jun  6 16:51:09 2026] 127.0.0.1:8929 Closing
+[Sun Jun  7 12:36:54 2026] 127.0.0.1:14004 Accepted
+[Sun Jun  7 12:36:54 2026] 127.0.0.1:14005 Accepted
+[Sun Jun  7 12:37:02 2026] 127.0.0.1:14004 Closing
+[Sun Jun  7 12:37:02 2026] 127.0.0.1:14009 Accepted
+[Sun Jun  7 12:37:02 2026] 127.0.0.1:14005 [200]: GET /assets/css/styles.css?v=1780492434
+[Sun Jun  7 12:37:02 2026] 127.0.0.1:14009 [200]: GET /assets/img/logo2.png?v=1780138482
+[Sun Jun  7 12:37:02 2026] 127.0.0.1:14005 Closing
+[Sun Jun  7 12:37:02 2026] 127.0.0.1:14009 Closing
+[Sun Jun  7 12:37:03 2026] 127.0.0.1:14015 Accepted
+[Sun Jun  7 12:37:03 2026] 127.0.0.1:14015 [200]: GET /assets/js/ui.js?v=1780486011
+[Sun Jun  7 12:37:03 2026] 127.0.0.1:14015 Closing
+[Sun Jun  7 12:37:04 2026] 127.0.0.1:14019 Accepted
+[Sun Jun  7 12:37:04 2026] 127.0.0.1:14019 [200]: GET /assets/img/favicon-32.png?v=1780138536
+[Sun Jun  7 12:37:04 2026] 127.0.0.1:14019 Closing
+[Sun Jun  7 12:37:04 2026] 127.0.0.1:14020 Accepted
+[Sun Jun  7 12:42:06 2026] 127.0.0.1:14020 Closed without sending a request; it was probably just an unused speculative preconnection
+[Sun Jun  7 12:42:06 2026] 127.0.0.1:14020 Closing

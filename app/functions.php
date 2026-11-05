@@ -160,6 +160,49 @@ function full_name_has_number(string $name): bool
     return preg_match('/\d/', $name) === 1;
 }
 
+function normalized_contact_email(string $email): string
+{
+    $email = trim($email);
+    return function_exists('mb_strtolower') ? mb_strtolower($email, 'UTF-8') : strtolower($email);
+}
+
+function normalized_phone_number(string $phone): string
+{
+    $digits = preg_replace('/\D+/', '', $phone) ?? '';
+    if (str_starts_with($digits, '00')) {
+        $digits = substr($digits, 2);
+    }
+    // Treat the common Nigerian local and international forms as the same number.
+    if (str_starts_with($digits, '0') && strlen($digits) === 11) {
+        $digits = '234' . substr($digits, 1);
+    }
+    return $digits;
+}
+
+function validate_next_of_kin_details(string $fullName, string $email, string $phone, string $relationship, string $studentEmail, string $studentPhone): ?string
+{
+    if ($fullName === '' || full_name_has_number($fullName)) {
+        return 'Next of kin full name cannot be empty or contain numbers.';
+    }
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        return 'Enter a valid next of kin email address.';
+    }
+    $normalizedPhone = normalized_phone_number($phone);
+    if (strlen($normalizedPhone) < 7) {
+        return 'Enter a valid next of kin phone number.';
+    }
+    if (trim($relationship) === '') {
+        return 'Select or enter the next of kin relationship.';
+    }
+    if (normalized_contact_email($email) === normalized_contact_email($studentEmail)) {
+        return 'Next of kin email address must be different from the student email address.';
+    }
+    if ($normalizedPhone === normalized_phone_number($studentPhone)) {
+        return 'Next of kin phone number must be different from the student phone number.';
+    }
+    return null;
+}
+
 function password_is_strong(string $password): bool
 {
     return strlen($password) >= 8

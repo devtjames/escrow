@@ -44,6 +44,18 @@ function ensure_academic_schema_updates(): void
             db()->exec("ALTER TABLE students ADD entry_level ENUM('ND1','ND2','HND1','HND2') NOT NULL DEFAULT 'ND1' AFTER programme_type");
             db()->exec("UPDATE students SET entry_level = CONCAT(programme_type, '1')");
         }
+        $studentColumns = [
+            'next_of_kin_full_name' => 'VARCHAR(160) NULL AFTER phone',
+            'next_of_kin_email' => 'VARCHAR(190) NULL AFTER next_of_kin_full_name',
+            'next_of_kin_phone' => 'VARCHAR(40) NULL AFTER next_of_kin_email',
+            'next_of_kin_relationship' => 'VARCHAR(100) NULL AFTER next_of_kin_phone',
+        ];
+        foreach ($studentColumns as $name => $definition) {
+            $column = db_one("SHOW COLUMNS FROM students LIKE '" . $name . "'");
+            if (!$column) {
+                db()->exec('ALTER TABLE students ADD ' . $name . ' ' . $definition);
+            }
+        }
         db()->exec(
             "UPDATE students
              SET entry_level = CONCAT(programme_type, RIGHT(entry_level, 1))

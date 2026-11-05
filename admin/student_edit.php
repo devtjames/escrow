@@ -28,8 +28,15 @@ if (post_request()) {
         $mode = strtoupper(field('study_mode'));
         $entryLevel = strtoupper(field('entry_level'));
         $fullName = normalize_full_name(field('full_name'));
+        $nextOfKinFullName = normalize_full_name(field('next_of_kin_full_name'));
+        $nextOfKinEmail = field('next_of_kin_email');
+        $nextOfKinPhone = field('next_of_kin_phone');
+        $nextOfKinRelationship = field('next_of_kin_relationship');
         if ($fullName === '' || full_name_has_number($fullName)) {
             throw new RuntimeException('Full name cannot contain numbers.');
+        }
+        if ($nextOfKinError = validate_next_of_kin_details($nextOfKinFullName, $nextOfKinEmail, $nextOfKinPhone, $nextOfKinRelationship, field('email'), field('phone'))) {
+            throw new RuntimeException($nextOfKinError);
         }
         if (!validate_programme($programme, $mode)) {
             throw new RuntimeException('Invalid programme combination. HND PT does not exist.');
@@ -46,7 +53,7 @@ if (post_request()) {
 
         db_exec(
             'UPDATE students
-             SET full_name = ?, email = ?, phone = ?, address = ?, gender = ?,
+             SET full_name = ?, email = ?, phone = ?, next_of_kin_full_name = ?, next_of_kin_email = ?, next_of_kin_phone = ?, next_of_kin_relationship = ?, address = ?, gender = ?,
                  faculty_id = ?, department_id = ?, programme_type = ?, entry_level = ?, study_mode = ?,
                  application_number = ?, matric_number = ?, matric_locked = ?,
                  admission_session_id = ?, status = ?
@@ -55,6 +62,10 @@ if (post_request()) {
                 $fullName,
                 field('email'),
                 field('phone'),
+                $nextOfKinFullName,
+                $nextOfKinEmail,
+                $nextOfKinPhone,
+                $nextOfKinRelationship,
                 field('address'),
                 field('gender'),
                 (int) field('faculty_id'),
@@ -114,6 +125,10 @@ page_head('Edit Student | FEDPOFFA Admin', 'Edit student biodata.', ['assets/js/
         <label class="form-label">Matric Number<input class="input" name="matric_number" value="<?= e($student['matric_number']) ?>" placeholder="Enter or correct matric number"></label>
         <label class="form-label">Matric Lock<select class="input" name="matric_locked"><option value="1" <?= (int) $student['matric_locked'] === 1 ? 'selected' : '' ?>>Locked</option><option value="0" <?= (int) $student['matric_locked'] === 0 ? 'selected' : '' ?>>Unlocked</option></select><span class="form-help">Students cannot edit matric number when locked. Admins can still correct it here.</span></label>
         <label class="form-label">Phone<input class="input" name="phone" value="<?= e($student['phone']) ?>" required></label>
+        <label class="form-label">Next of Kin / Guardian Full Name<input class="input uppercase" name="next_of_kin_full_name" value="<?= e($student['next_of_kin_full_name'] ?? '') ?>" pattern="[^0-9]*" title="Full name cannot contain numbers" data-name-input required></label>
+        <label class="form-label">Next of Kin Relationship<input class="input" name="next_of_kin_relationship" value="<?= e($student['next_of_kin_relationship'] ?? '') ?>" placeholder="Parent, guardian, sibling" required></label>
+        <label class="form-label">Next of Kin Email<input class="input" name="next_of_kin_email" type="email" value="<?= e($student['next_of_kin_email'] ?? '') ?>" required></label>
+        <label class="form-label">Next of Kin Phone<input class="input" name="next_of_kin_phone" value="<?= e($student['next_of_kin_phone'] ?? '') ?>" required><span class="form-help">Must differ from the student's email address and phone number.</span></label>
         <label class="form-label">Gender<select class="input" name="gender"><?php foreach (['Female','Male','Other'] as $gender): ?><option <?= $student['gender'] === $gender ? 'selected' : '' ?>><?= e($gender) ?></option><?php endforeach; ?></select></label>
         <label class="form-label">Status<select class="input" name="status"><?php foreach (['active','suspended'] as $status): ?><option value="<?= e($status) ?>" <?= $student['status'] === $status ? 'selected' : '' ?>><?= e(ucfirst($status)) ?></option><?php endforeach; ?></select></label>
         <label class="form-label">Faculty<select class="input" name="faculty_id" data-faculty-select required><?php foreach ($faculties as $faculty): ?><option value="<?= (int) $faculty['id'] ?>" <?= (int) $student['faculty_id'] === (int) $faculty['id'] ? 'selected' : '' ?>><?= e($faculty['name']) ?></option><?php endforeach; ?></select></label>

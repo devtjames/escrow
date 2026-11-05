@@ -64,8 +64,15 @@ if (post_request()) {
             $mode = strtoupper(field('study_mode'));
             $entryLevel = strtoupper(field('entry_level'));
             $fullName = normalize_full_name(field('full_name'));
+            $nextOfKinFullName = normalize_full_name(field('next_of_kin_full_name'));
+            $nextOfKinEmail = field('next_of_kin_email');
+            $nextOfKinPhone = field('next_of_kin_phone');
+            $nextOfKinRelationship = field('next_of_kin_relationship');
             if ($fullName === '' || full_name_has_number($fullName)) {
                 throw new RuntimeException('Full name cannot contain numbers.');
+            }
+            if ($nextOfKinError = validate_next_of_kin_details($nextOfKinFullName, $nextOfKinEmail, $nextOfKinPhone, $nextOfKinRelationship, field('email'), field('phone'))) {
+                throw new RuntimeException($nextOfKinError);
             }
             if (db_one('SELECT id FROM students WHERE email = ? LIMIT 1', [field('email')])) {
                 throw new RuntimeException('Email address already exists.');
@@ -91,9 +98,9 @@ if (post_request()) {
                 throw new RuntimeException('Password must include upper/lowercase letters and a number.');
             }
             db_exec(
-                'INSERT INTO students (full_name, email, password_hash, phone, address, gender, faculty_id, department_id, programme_type, entry_level, study_mode, application_number, matric_number, matric_locked, admission_session_id)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-                [$fullName, field('email'), password_hash($password, PASSWORD_BCRYPT), field('phone'), field('address'), field('gender'), (int) field('faculty_id'), (int) field('department_id'), $programme, $entryLevel, $mode, field('application_number'), $matric, $matric ? 1 : 0, (int) field('admission_session_id')]
+                'INSERT INTO students (full_name, email, password_hash, phone, next_of_kin_full_name, next_of_kin_email, next_of_kin_phone, next_of_kin_relationship, address, gender, faculty_id, department_id, programme_type, entry_level, study_mode, application_number, matric_number, matric_locked, admission_session_id)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                [$fullName, field('email'), password_hash($password, PASSWORD_BCRYPT), field('phone'), $nextOfKinFullName, $nextOfKinEmail, $nextOfKinPhone, $nextOfKinRelationship, field('address'), field('gender'), (int) field('faculty_id'), (int) field('department_id'), $programme, $entryLevel, $mode, field('application_number'), $matric, $matric ? 1 : 0, (int) field('admission_session_id')]
             );
             ensure_student_wallet((int) db()->lastInsertId());
             flash_set('success', 'Student saved.');
@@ -182,6 +189,10 @@ page_head('Manage Students | FEDPOFFA Admin', 'Manage FEDPOFFA students.', ['ass
             <label class="form-label">Matric Number<input class="input" name="matric_number"><span class="form-help">Locks immediately if supplied.</span></label>
             <label class="form-label">Email<input class="input" name="email" type="email" required></label>
             <label class="form-label">Phone<input class="input" name="phone" required></label>
+            <label class="form-label">Next of Kin / Guardian Full Name<input class="input uppercase" name="next_of_kin_full_name" pattern="[^0-9]*" title="Full name cannot contain numbers" data-name-input required></label>
+            <label class="form-label">Next of Kin Relationship<input class="input" name="next_of_kin_relationship" placeholder="Parent, guardian, sibling" required></label>
+            <label class="form-label">Next of Kin Email<input class="input" name="next_of_kin_email" type="email" required></label>
+            <label class="form-label">Next of Kin Phone<input class="input" name="next_of_kin_phone" required><span class="form-help">Must differ from the student's email address and phone number.</span></label>
             <label class="form-label">Gender<select class="input" name="gender"><option>Female</option><option>Male</option><option>Other</option></select></label>
             <label class="form-label">Faculty<select class="input" name="faculty_id" data-faculty-select required><option value="">Select faculty</option><?php foreach ($faculties as $faculty): ?><option value="<?= (int) $faculty['id'] ?>"><?= e($faculty['name']) ?></option><?php endforeach; ?></select></label>
             <label class="form-label">Department<select class="input" name="department_id" data-department-select required><option value="">Select faculty first</option></select></label>
